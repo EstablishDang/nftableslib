@@ -593,6 +593,33 @@ func getExprForConntracks(cts []*Conntrack) []expr.Any {
 			})
 		case unix.NFT_CT_DIRECTION:
 		case unix.NFT_CT_STATUS:
+			re = append(re, &expr.Ct{Key: unix.NFT_CT_STATUS, Register: 1})
+			re = append(re, &expr.Bitwise{
+				SourceRegister: 1,
+				DestRegister:   1,
+				Len:            4,
+				Mask:           ct.Value,
+				Xor:            []byte{0x0, 0x0, 0x0, 0x0},
+			})
+			re = append(re, &expr.Cmp{
+				Op:       expr.CmpOpNeq,
+				Register: 1,
+				Data:     []byte{0x0, 0x0, 0x0, 0x0},
+			})
+		case unix.NFT_CT_MARK:
+			re = append(re, &expr.Ct{Key: unix.NFT_CT_MARK, Register: 1})
+			re = append(re, &expr.Bitwise{
+				SourceRegister: 1,
+				DestRegister:   1,
+				Len:            4,
+				Mask:           ct.Value,
+				Xor:            []byte{0x0, 0x0, 0x0, 0x0},
+			})
+			re = append(re, &expr.Cmp{
+				Op:       expr.CmpOpNeq,
+				Register: 1,
+				Data:     []byte{0x0, 0x0, 0x0, 0x0},
+			})
 		case unix.NFT_CT_LABELS:
 		case unix.NFT_CT_EVENTMASK:
 		}
