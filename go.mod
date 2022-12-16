@@ -1,4 +1,4 @@
-module github.com/sbezverk/nftableslib
+module github.com/EstablishDang/nftableslib
 
 go 1.17
 
