@@ -50,6 +50,7 @@ type RuleFuncs interface {
 	UpdateRulesHandle() error
 	GetRuleHandle(id uint32) (uint64, error)
 	GetRulesUserData() (map[uint64][]byte, error)
+	GetRulesExpr() (map[uint64][]expr.Any, error)
 }
 
 type nfRules struct {
@@ -532,6 +533,21 @@ func (nfr *nfRules) GetRulesUserData() (map[uint64][]byte, error) {
 		if rule.UserData != nil {
 			// TODO, needs to be tested
 			ud[rule.Handle] = rule.UserData[:len(rule.UserData)-4]
+		}
+	}
+
+	return ud, nil
+}
+
+func (nfr *nfRules) GetRulesExpr() (map[uint64][]expr.Any, error) {
+	rules, err := nfr.conn.GetRule(nfr.table, nfr.chain)
+	if err != nil {
+		return nil, err
+	}
+	ud := make(map[uint64][]expr.Any, 0)
+	for _, rule := range rules {
+		if rule.Exprs != nil {
+			ud[rule.Handle] = rule.Exprs
 		}
 	}
 
