@@ -11,7 +11,6 @@ import (
 	"github.com/google/nftables/binaryutil"
 	"github.com/google/nftables/expr"
 	"github.com/google/uuid"
-	"github.com/pkg/errors"
 	"golang.org/x/sys/unix"
 )
 
@@ -240,8 +239,7 @@ func (nfr *nfRules) create(rule *Rule, ruleOp ruleOperation) (uint32, error) {
 	// Adding nfRule to the list
 	isAlreadyExists := nfr.addRule(rr)
 	if isAlreadyExists {
-		err := errors.Errorf("%s", "Error, rule already exists")
-		return 0, err
+		return 0, fmt.Errorf("rule %s", "already exists")
 	}
 	if rule.Position != 0 {
 		// Used by Insert call
