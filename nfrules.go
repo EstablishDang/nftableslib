@@ -240,9 +240,8 @@ func (nfr *nfRules) create(rule *Rule, ruleOp ruleOperation) (uint32, error) {
 	// Adding nfRule to the list
 	isAlreadyExists := nfr.addRule(rr)
 	if isAlreadyExists {
-		var err error
-		err = errors.Errorf("%s", "Error, already exists")
-		return 0, errors.Wrapf(err, "rule already exists")
+		err := errors.Errorf("%s", "Error, rule already exists")
+		return 0, err
 	}
 	if rule.Position != 0 {
 		// Used by Insert call
