@@ -1,6 +1,9 @@
 package nftableslib
 
-import "fmt"
+import (
+	"fmt"
+	"reflect"
+)
 
 const (
 	initialRuleID   = 10
@@ -85,7 +88,7 @@ func (r *nfRules) dumpRules() []*nfRule {
 func getLastAndCheckExists(e *nfRule, new_e *nfRule) (bool, *nfRule) {
 	if e.next == nil {
 		return false, e
-	} else if e.next.rule.Exprs == new_e.rule.Exprs {
+	} else if reflect.DeepEqual(e.next.rule.Exprs, new_e.rule.Exprs) {
 		return true, nil
 	}
 	return getLastAndCheckExists(e.next, new_e)
