@@ -7,7 +7,7 @@ const (
 	ruleIDIncrement = 10
 )
 
-func (r *nfRules) addRule(e *nfRule) {
+func (r *nfRules) addRule(e *nfRule) bool {
 	if r.rules == nil {
 		r.rules = e
 		r.rules.next = nil
@@ -15,9 +15,12 @@ func (r *nfRules) addRule(e *nfRule) {
 		r.currentID = initialRuleID
 		r.rules.id = initialRuleID
 		r.currentID += ruleIDIncrement
-		return
+		return false
 	}
-	last := getLast(r.rules)
+	isAlreadyExists, last := getLastAndCheckExists(r.rules, e)
+	if isAlreadyExists {
+		return true
+	}
 	// Locking current last list's elelemnt.
 	last.Lock()
 	defer last.Unlock()
@@ -30,7 +33,7 @@ func (r *nfRules) addRule(e *nfRule) {
 	last.next.id = r.currentID
 	r.currentID += ruleIDIncrement
 
-	return
+	return false
 }
 
 func (r *nfRules) removeRule(id uint32) error {
@@ -79,11 +82,13 @@ func (r *nfRules) dumpRules() []*nfRule {
 	return rr
 }
 
-func getLast(e *nfRule) *nfRule {
+func getLastAndCheckExists(e *nfRule, new_e *nfRule) (bool, *nfRule) {
 	if e.next == nil {
-		return e
+		return false, e
+	} else if e.next == new_e {
+		return true, nil
 	}
-	return getLast(e.next)
+	return getLastAndCheckExists(e.next, new_e)
 }
 
 func getRuleByID(e *nfRule, id uint32) (*nfRule, error) {
